@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace AvantRestAPI.Models
 {
-    public abstract class BaseModel
+    interface IDbRepository
     {
-        public int Id { get; set; }
+        IEnumerable<Contractor> Contractors { get; }
     }
 }

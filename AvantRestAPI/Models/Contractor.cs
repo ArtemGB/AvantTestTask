@@ -24,21 +24,7 @@ namespace AvantRestAPI.Models
                 _name = value;
             }
         }
-
-        private string _fullName;
-        public string FullName
-        {
-            get => _fullName;
-            set
-            {
-                if (String.IsNullOrEmpty(value) || String.IsNullOrWhiteSpace(value))
-                {
-                    throw new ArgumentException("Field FullName should be filled.");
-                }
-
-                _fullName = value;
-            }
-        }
+        public string FullName { get; set; }
 
         private ContractorType _type;
         public ContractorType Type
@@ -76,16 +62,11 @@ namespace AvantRestAPI.Models
             get => _kpp;
             set
             {
-                if (Type == ContractorType.Organization)
+                if (Type == ContractorType.Legal)
                     if (String.IsNullOrEmpty(value) || String.IsNullOrWhiteSpace(value))
-                        throw new ArgumentException("Field KPP should be filled if contractor is a Organization.");
+                        throw new ArgumentException("Field KPP should be filled if contractor is a Legal.");
                 _kpp = value;
             }
-        }
-
-        public Contractor()
-        {
-
         }
     }
 }

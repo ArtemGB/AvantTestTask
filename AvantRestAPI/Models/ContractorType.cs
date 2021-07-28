@@ -7,7 +7,13 @@ namespace AvantRestAPI.Models
 {
     public enum ContractorType
     {
-        Organization,
-        IndividualEntrepreneurship
+        /// <summary>
+        /// Юр. лицо
+        /// </summary>
+        Legal,
+        /// <summary>
+        /// ИП
+        /// </summary>
+        Individual
     }
 }
