@@ -15,11 +15,12 @@ namespace AvantRestAPI.Models
 
         public Contractor CreateContractor(string name, ContractorType type, string inn, string kpp = "")
         {
-            if (CheckContractorOnDaData(type, name, kpp).Result)
+            var contractor = GetContractorFromDaData(type, inn, kpp).Result;
+            if (contractor != null)
                 return new Contractor()
                 {
                     Name = name,
-                    FullName = "",
+                    FullName = contractor.name.full_with_opf,
                     INN = inn,
                     KPP = kpp,
                     Type = type
@@ -27,12 +28,11 @@ namespace AvantRestAPI.Models
             throw new ArgumentException($"Contractor with inn = {inn} and kpp = {kpp} not found on DaData");
         }
 
-        protected async Task<bool> CheckContractorOnDaData(ContractorType type, string inn, string kpp = "")
+        protected async Task<Party> GetContractorFromDaData(ContractorType type, string inn, string kpp = "")
         {
-            var request = new FindPartyRequest(query: inn, kpp: kpp);
+            var request = type == ContractorType.Individual ? new FindPartyRequest(query: inn) : new FindPartyRequest(query: inn, kpp: kpp);
             var response = await _api.FindParty(request);
-            var party = response.suggestions[0].data;
-            return true;
+            return response.suggestions.Count > 0 ? response.suggestions[0].data : null;
         }
     }
 }

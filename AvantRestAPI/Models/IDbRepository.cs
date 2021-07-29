@@ -5,8 +5,11 @@ using System.Threading.Tasks;
 
 namespace AvantRestAPI.Models
 {
-    interface IDbRepository
+    public interface IDbRepository
     {
         IEnumerable<Contractor> Contractors { get; }
+        void AddContractor(Contractor contractor);
+        void RemoveContractor(Contractor contractor);
+        void RemoveContractor(int Id);
     }
 }
