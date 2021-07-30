@@ -14,12 +14,12 @@ namespace AvantRestAPI
         {
             LiteDbRepository db = new LiteDbRepository(configuration);
             var contractors = db.Contractors;
-            EntityCreator creator = new EntityCreator();
-            db.AddContractor(creator.CreateContractor("Sber", ContractorType.Legal, "7707083893", "773643001"));
-            db.AddContractor(creator.CreateContractor("МКБ", ContractorType.Legal, "7734202860", "770801001"));
-            db.AddContractor(creator.CreateContractor("Cofix", ContractorType.Legal, "7728339641", "770601001"));
-            db.AddContractor(creator.CreateContractor("Sber", ContractorType.Legal, "7707083893", "773643001"));
-            db.AddContractor(creator.CreateContractor("Sber", ContractorType.Legal, "7707083893", "773643001"));
+            if (!db.Contractors.Any())
+            {
+                db.AddContractor(new Contractor(){ Name = "Sber", INN = "7707083893", KPP = "773643001", Type = ContractorType.Legal});
+                db.AddContractor(new Contractor(){ Name = "МКБ", INN = "7734202860", KPP = "770801001", Type = ContractorType.Legal});
+                db.AddContractor(new Contractor(){ Name = "Cofix", INN = "7728339641", KPP = "770601001", Type = ContractorType.Legal});
+            }
         }
     }
 }

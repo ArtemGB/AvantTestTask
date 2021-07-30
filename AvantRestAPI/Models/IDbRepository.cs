@@ -10,6 +10,6 @@ namespace AvantRestAPI.Models
         IEnumerable<Contractor> Contractors { get; }
         void AddContractor(Contractor contractor);
         void RemoveContractor(Contractor contractor);
-        void RemoveContractor(int Id);
+        void RemoveContractor(int id);
     }
 }

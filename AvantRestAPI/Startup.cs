@@ -20,13 +20,11 @@ namespace AvantRestAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //JSON serializer
-            services.AddControllersWithViews()
+            services.AddSingleton<IDbRepository, LiteDbRepository>();
+            services.AddControllers()
                 .AddNewtonsoftJson(options =>
                     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore)
-                .AddNewtonsoftJson(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver());
-            services.AddScoped<IDbRepository, LiteDbRepository>();
-            services.AddControllers();
+                .AddNewtonsoftJson(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver()); ;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

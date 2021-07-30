@@ -12,18 +12,32 @@ namespace AvantRestAPI.Controllers
     [Route("[controller]")]
     public class ContractorController : Controller
     {
-        private readonly IDbRepository db;
+        private readonly IDbRepository _db;
 
         public ContractorController(IDbRepository repository)
         {
-            db = repository;
+            _db = repository;
         }
 
         [HttpGet]
         [Route("Index")]
         public JsonResult Index()
         {
-            return new JsonResult(db.Contractors);
+            return new JsonResult(_db.Contractors);
+        }
+
+        [HttpPost]
+        [Route("Create")]
+        public JsonResult CreateContractor(Contractor contractor)
+        {
+            try
+            {
+                _db.AddContractor(contractor);
+            }
+            catch (Exception e)
+            {
+                return new JsonResult($"Error : {e.Message}");
+            }
         }
     }
 }
