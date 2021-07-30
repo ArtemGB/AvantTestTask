@@ -15,8 +15,8 @@ namespace AvantRestAPI.Models
             if (x.GetType() != y.GetType()) return false;
             return x.FullName == y.FullName 
                    && x.Name == y.Name 
-                   && x.INN == y.INN
-                   && x.KPP == y.KPP
+                   && x.Inn == y.Inn
+                   && x.Kpp == y.Kpp
                    && x.Type == y.Type
                    && x.Id == y.Id;
         }

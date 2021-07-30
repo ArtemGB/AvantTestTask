@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace AvantRestAPI.Models
 {
@@ -27,6 +29,8 @@ namespace AvantRestAPI.Models
         public string FullName { get; set; }
 
         private ContractorType _type;
+
+        [JsonConverter(typeof(StringEnumConverter))]
         public ContractorType Type
         {
             get => _type;
@@ -42,7 +46,7 @@ namespace AvantRestAPI.Models
         }
 
         private string _inn;
-        public string INN
+        public string Inn
         {
             get => _inn;
             set
@@ -57,7 +61,7 @@ namespace AvantRestAPI.Models
         }
 
         private string _kpp;
-        public string KPP
+        public string Kpp
         {
             get => _kpp;
             set

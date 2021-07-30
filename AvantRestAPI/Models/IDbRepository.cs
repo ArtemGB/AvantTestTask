@@ -8,7 +8,8 @@ namespace AvantRestAPI.Models
     public interface IDbRepository
     {
         IEnumerable<Contractor> Contractors { get; }
-        void AddContractor(Contractor contractor);
+        Contractor AddContractor(Contractor contractor);
+        Contractor UpdateContractor(Contractor contractor);
         void RemoveContractor(Contractor contractor);
         void RemoveContractor(int id);
     }

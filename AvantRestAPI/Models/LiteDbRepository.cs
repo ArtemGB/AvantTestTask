@@ -10,7 +10,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace AvantRestAPI.Models
 {
-    public class LiteDbRepository : IDbRepository
+    public class LiteDbRepository : IDbRepository, IDisposable
     {
         private readonly LiteDatabase _database;
         private const string DaDataApiToken = "921e88969c6d8fa637fe7f5c3805e04c8ada1dff";
@@ -23,37 +23,67 @@ namespace AvantRestAPI.Models
             _database = new LiteDatabase(@configuration["ConnectionStrings:LiteDbConnection"]);
         }
 
-        ~LiteDbRepository()
+        public Contractor AddContractor(Contractor contractor)
         {
-            _database.Dispose();
-        }
-        public void AddContractor(Contractor contractor)
-        {
-            var contractorFromDaData = GetContractorFromDaData(contractor.Type, contractor.INN, contractor.KPP).Result;
+            var contractorFromDaData = GetContractorFromDaData(contractor.Type, contractor.Inn, contractor.Kpp).Result;
             if (contractorFromDaData != null)
-                _database.GetCollection<Contractor>("Contractors").Insert(new Contractor()
+            {
+                Contractor newContractor = new Contractor()
                 {
                     Name = contractor.Name,
                     FullName = contractorFromDaData.name.full_with_opf,
-                    INN = contractor.INN,
-                    KPP = contractor.KPP,
+                    Inn = contractor.Inn,
+                    Kpp = contractor.Kpp,
                     Type = contractor.Type
-                });
-            throw new ArgumentException($"Contractor with inn = {contractor.INN} and kpp = {contractor.KPP} not found on DaData");
+                };
+                _database.GetCollection<Contractor>("Contractors").Insert(newContractor);
+                return newContractor;
+            }
+
+            throw new ArgumentException($"Contractor with inn = {contractor.Inn} and kpp = {contractor.Kpp} not found on DaData");
+        }
+
+        public Contractor UpdateContractor(Contractor contractor)
+        {
+            var contractors = _database.GetCollection<Contractor>("Contractors");
+            Contractor contractorToUpdate = contractors.FindById(contractor.Id);
+            if (contractorToUpdate != null)
+            {
+                contractorToUpdate.Type = contractor.Type;
+                contractorToUpdate.Name = contractor.Name;
+                if (contractorToUpdate.Inn != contractor.Inn || contractorToUpdate.Kpp != contractor.Kpp)
+                {
+                    var contractorFromDaData = GetContractorFromDaData(contractor.Type, contractor.Inn, contractor.Kpp).Result;
+                    if (contractorFromDaData != null)
+                    {
+                        contractorToUpdate.Inn = contractor.Inn;
+                        contractorToUpdate.Kpp = contractor.Kpp;
+                    }
+                    else
+                    {
+                        throw new ArgumentException(
+                            $"New INN {contractor.Inn} and KPP {contractor.Kpp} are incorrect. Contractor with this params wasn't " +
+                            $"founded on DaData");
+                    }
+                }
+                contractorToUpdate.FullName = contractor.FullName;
+                contractors.Update(contractorToUpdate);
+            }
+            throw new ArgumentException($"There is no contractor with id = {contractor.Id}");
         }
 
         public void RemoveContractor(Contractor contractor)
         {
-            Contractor contractorToDelete = Contractors.FirstOrDefault(c => c.INN == contractor.INN
-                                   && c.KPP == contractor.KPP
+            Contractor contractorToDelete = Contractors.FirstOrDefault(c => c.Inn == contractor.Inn
+                                   && c.Kpp == contractor.Kpp
                                    && c.Name == contractor.Name
                                    && c.Type == contractor.Type
                                    && c.FullName == contractor.FullName
                                    && c.Id == contractor.Id);
             if (contractorToDelete != null)
-            {
                 _database.GetCollection<Contractor>("Contractors").Delete(contractor.Id);
-            }
+            else
+                throw new ArgumentException($"There is no contractor with id = {contractor.Id}");
         }
 
         public void RemoveContractor(int id)
@@ -61,6 +91,8 @@ namespace AvantRestAPI.Models
             Contractor contractorToDelete = Contractors.FirstOrDefault(c => c.Id == id);
             if (contractorToDelete != null)
                 _database.GetCollection<Contractor>("Contractors").Delete(id);
+            else
+                throw new ArgumentException($"There is no contractor with id = {id}");
         }
 
         private async Task<Party> GetContractorFromDaData(ContractorType type, string inn, string kpp = "")
@@ -68,6 +100,11 @@ namespace AvantRestAPI.Models
             var request = type == ContractorType.Individual ? new FindPartyRequest(query: inn) : new FindPartyRequest(query: inn, kpp: kpp);
             var response = await _api.FindParty(request);
             return response.suggestions.Count > 0 ? response.suggestions[0].data : null;
+        }
+
+        public void Dispose()
+        {
+            _database?.Dispose();
         }
     }
 }
