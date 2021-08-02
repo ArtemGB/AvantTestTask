@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Dadata;
@@ -25,19 +26,24 @@ namespace AvantRestAPI.Models
 
         public Contractor AddContractor(Contractor contractor)
         {
+            //Валидация полей.
+            var results = new List<ValidationResult>();
+            if (!Validator.TryValidateObject(contractor, new ValidationContext(contractor), results, true))
+                throw new ArgumentException(results[0].ErrorMessage);
+
             var contractorFromDaData = GetContractorFromDaData(contractor.Type, contractor.Inn, contractor.Kpp).Result;
             if (contractorFromDaData != null)
             {
-                Contractor newContractor = new Contractor()
-                {
-                    Name = contractor.Name,
-                    FullName = contractorFromDaData.name.full_with_opf,
-                    Inn = contractor.Inn,
-                    Kpp = contractor.Kpp,
-                    Type = contractor.Type
-                };
-                _database.GetCollection<Contractor>("Contractors").Insert(newContractor);
-                return newContractor;
+                    Contractor newContractor = new Contractor()
+                    {
+                        Name = contractor.Name,
+                        FullName = contractorFromDaData.name.full_with_opf,
+                        Inn = contractor.Inn,
+                        Kpp = contractor.Kpp,
+                        Type = contractor.Type
+                    };
+                    _database.GetCollection<Contractor>("Contractors").Insert(newContractor);
+                    return newContractor;
             }
 
             throw new ArgumentException($"Contractor with inn = {contractor.Inn} and kpp = {contractor.Kpp} not found on DaData");
@@ -45,6 +51,11 @@ namespace AvantRestAPI.Models
 
         public Contractor UpdateContractor(Contractor contractor)
         {
+            //Валидация полей.
+            var results = new List<ValidationResult>();
+            if (!Validator.TryValidateObject(contractor, new ValidationContext(contractor), results, true))
+                throw new ArgumentException(results[0].ErrorMessage);
+
             var contractors = _database.GetCollection<Contractor>("Contractors");
             Contractor contractorToUpdate = contractors.FindById(contractor.Id);
             if (contractorToUpdate != null)
