@@ -44,7 +44,14 @@ namespace AvantRestAPI.Controllers
         [Route("Update")]
         public JsonResult Update([FromBody] Contractor contractor)
         {
-            return new(_db.UpdateContractor(contractor));
+            try
+            {
+                return new(_db.UpdateContractor(contractor));
+            }
+            catch (Exception e)
+            {
+                return new($"Error : {e.Message}");
+            }
         }
 
         [HttpDelete]

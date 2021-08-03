@@ -16,7 +16,8 @@ namespace AvantRestAPI
             var contractors = db.Contractors;
             if (!db.Contractors.Any())
             {
-                db.AddContractor(new Contractor(){ Name = "Sber", Inn = "7707083893", Kpp = "773643001", Type = ContractorType.Legal});
+                db.AddContractor(new Contractor(){ Name = "Avant", Inn = "7810613720", Kpp = "781001001", Type = ContractorType.Legal});
+                db.AddContractor(new Contractor(){ Name = "Сбер", Inn = "7707083893", Kpp = "773643001", Type = ContractorType.Legal});
                 db.AddContractor(new Contractor(){ Name = "МКБ", Inn = "7734202860", Kpp = "770801001", Type = ContractorType.Legal});
                 db.AddContractor(new Contractor(){ Name = "Cofix", Inn = "7728339641", Kpp = "770601001", Type = ContractorType.Legal});
             }

@@ -27,6 +27,9 @@ namespace AvantRestAPI.Models
         public Contractor AddContractor(Contractor contractor)
         {
             //Валидация полей.
+            contractor.Name = contractor.Name.Trim();
+            contractor.Kpp = contractor.Kpp.Trim();
+            contractor.Inn = contractor.Inn.Trim();
             var results = new List<ValidationResult>();
             if (!Validator.TryValidateObject(contractor, new ValidationContext(contractor), results, true))
                 throw new ArgumentException(results[0].ErrorMessage);
@@ -56,8 +59,7 @@ namespace AvantRestAPI.Models
             if (!Validator.TryValidateObject(contractor, new ValidationContext(contractor), results, true))
                 throw new ArgumentException(results[0].ErrorMessage);
 
-            var contractors = _database.GetCollection<Contractor>("Contractors");
-            Contractor contractorToUpdate = contractors.FindById(contractor.Id);
+            Contractor contractorToUpdate = Contractors.FirstOrDefault(c=> c.Id == contractor.Id);
             if (contractorToUpdate != null)
             {
                 contractorToUpdate.Type = contractor.Type;
@@ -78,7 +80,7 @@ namespace AvantRestAPI.Models
                     }
                 }
                 contractorToUpdate.FullName = contractor.FullName;
-                contractors.Update(contractorToUpdate);
+                _database.GetCollection<Contractor>("Contractors").Update(contractorToUpdate);
             }
             throw new ArgumentException($"There is no contractor with id = {contractor.Id}");
         }
